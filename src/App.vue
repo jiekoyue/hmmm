@@ -1,7 +1,6 @@
 <template>
-    <div>
-        app.vue
-        <router-link to="#">dain</router-link>
+    <div class="box">
+
     </div>
 </template>
 
@@ -11,6 +10,6 @@
 	}
 </script>
 
-<style scoped>
-
+<style>
+    @import "./assets/css/base.css";
 </style>
