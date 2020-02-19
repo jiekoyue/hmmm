@@ -10,12 +10,9 @@
 	}
 </script>
 
-<style>
-    @import "./assets/css/base.css";
-
+<style scoped>
     .box {
-        width: 100%;
         height: 100%;
-        background: linear-gradient(225deg, rgba(20, 147, 250, 1), rgba(1, 198, 250, 1));
+        width: 100%;
     }
 </style>
