@@ -1,12 +1,13 @@
 <template>
     <div>
         app.vue
+        <router-link to="#">dain</router-link>
     </div>
 </template>
 
 <script>
 	export default {
-		name: "${COMPONENT_NAME}",
+		name: "App",
 	}
 </script>
 
