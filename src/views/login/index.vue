@@ -11,17 +11,17 @@
                     </div>
                 </el-col>
             </el-row>
-            <el-input placeholder="请输入验证码" v-model="username" class="baseinp">
-                <i slot="prefix" class="el-input__icon  iconfont icon-denglu"></i>
+            <el-input placeholder="请输入用户名" v-model="username" class="baseinp" clearable>
+                <i slot="prefix" class="el-input__icon  el-icon-user"></i>
             </el-input>
-            <el-input placeholder="请输入验证码" v-model="userpass" class="baseinp">
-                <i slot="prefix" class="el-input__icon  iconfont icon-mima"></i>
+            <el-input placeholder="请输入密码" v-model="userpass" class="baseinp" show-password>
+                <i slot="prefix" class="el-input__icon  el-icon-lock"></i>
             </el-input>
             <el-row class="baseinp">
                 <el-col :span="18">
                     <div class="grid-content bg-purple-dark">
-                        <el-input placeholder="请输入验证码" v-model="useryzm">
-                            <i slot="prefix" class="el-input__icon  iconfont icon-yanzhengma"></i>
+                        <el-input placeholder="请输入验证码" v-model="useryzm" clearable>
+                            <i slot="prefix" class="el-input__icon  el-icon-key"></i>
                         </el-input>
                     </div>
                 </el-col>
@@ -64,7 +64,6 @@
 </script>
 
 <style scoped lang="less">
-    @import "../../style/font_1emtj6m6vvo/iconfont.css";
 
     .login-warp {
         width: 100%;
