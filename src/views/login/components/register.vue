@@ -127,7 +127,7 @@
 							window.console.log(msg);
 							if (msg.data.code == 200) {
 								this.$message({
-									message: '恭喜你，注册成功',
+									message: '注册成功',
 									type: 'success'
 								});
 								window.console.log(msg.data.data.user_id);

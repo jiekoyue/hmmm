@@ -102,7 +102,24 @@
 			login() {
 				this.$refs.form.validate(v => {
 					if (v) {
-						alert(1);
+						this.form.code
+						this.$axios({
+							url: 'login',
+							method: 'post',
+							data: this.form,
+							withCredentials: true
+						}).then(msg => {
+							window.console.log(msg);
+							if (msg.data.code == 200) {
+								this.$message({
+									message: '登录成功',
+									type: 'success'
+								});
+								window.localStorage.setItem("token", msg.data.data.token)
+							} else {
+								this.$message.error(msg.data.message);
+							}
+						});
 					}
 				})
 			},
@@ -110,12 +127,12 @@
 				this.$refs.zc.zckey = true;
 			},
 			codeinfo() {
-				this.codeurl = 'http://127.0.0.1/heimamm/public/captcha?type=sendsms&t=' + Math.random() * 99;
+				this.codeurl = process.env.VUE_APP_URL + '/captcha?type=login&t=' + Math.random() * 99;
 			}
 		},
 		created() {
 			this.codeinfo();
-			// window.console.log(process.env.VUE_APP_URL);
+			window.console.log();
 		}
 	}
 </script>
