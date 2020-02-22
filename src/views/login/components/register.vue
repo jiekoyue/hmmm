@@ -126,9 +126,13 @@
 						}).then(msg => {
 							window.console.log(msg);
 							if (msg.data.code == 200) {
+								this.$message({
+									message: '恭喜你，注册成功',
+									type: 'success'
+								});
 								window.console.log(msg.data.data.user_id);
 							} else {
-								alert(msg.data.message);
+								this.$message.error(msg.data.message);
 							}
 						});
 					}
@@ -137,6 +141,10 @@
 			handleAvatarSuccess(res, file) {
 				this.imgUrl = URL.createObjectURL(file.raw);
 				this.ruleForm.avatar = res.data.file_path;
+				this.$message({
+					message: '图片上传成功',
+					type: 'success'
+				});
 			},
 			beforeAvatarUpload(file) {
 				const isJPG = file.type === 'image/jpeg';
@@ -173,9 +181,13 @@
 
 				}).then(msg => {
 					if (msg.data.code == 200) {
-						alert(msg.data.data.captcha)
+						alert(msg.data.data.captcha);
+						this.$message({
+							message: '验证码已发送，请在60s内注册完毕',
+							type: 'success'
+						});
 					} else {
-						alert(msg.data.message)
+						this.$message.error(msg.data.message);
 					}
 					window.console.log(msg);
 				}).catch(() => {
