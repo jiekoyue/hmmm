@@ -37,7 +37,7 @@
                         </el-col>
                         <el-col :span="7">
                             <div class="grid-content bg-purple-dark yzm">
-                                <img src="./imgs/login_captcha.png" alt="">
+                                <img :src="codeurl" @click="codeinfo" alt="">
                             </div>
                         </el-col>
                     </el-row>
@@ -51,100 +51,31 @@
 
                 <el-form-item>
                     <el-button type="primary" class="baseinp" @click="login">登录</el-button>
-                    <el-button type="primary" @click="zckey=true" class="baseinp" style="margin-left: 0;">注册</el-button>
+                    <el-button type="primary" @click="goreg" class="baseinp" style="margin-left: 0;">注册</el-button>
                 </el-form-item>
             </el-form>
         </div>
         <img src="./imgs/login_banner_ele.png" alt="">
-        <div class="zhuce" v-if="zckey" @click="zckey=false">
-            <div class="zhucebox" @click.stop="">
-                <div class="zc-top">
-                    <p>用户注册</p>
-                </div>
-                <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" label-width="87px"
-                         class="demo-ruleForm">
-                    <el-form-item label="头像" prop="">
-                        <el-upload
-                                class="avatar-uploader zx-flex"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                        </el-upload>
-                    </el-form-item>
-
-                    <el-form-item label="昵称" prop="name">
-                        <el-input v-model="ruleForm.name"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="邮箱" prop="email">
-                        <el-input v-model="ruleForm.email"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="手机" prop="phone">
-                        <el-input v-model="ruleForm.phone"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="密码" prop="password">
-                        <el-input v-model="ruleForm.password"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="图形码" prop="code">
-                        <el-row>
-                            <el-col :span="16">
-                                <el-input v-model="ruleForm.code"></el-input>
-                            </el-col>
-                            <el-col :span="8">
-                                <img src="./imgs/login_captcha.png" alt="" class="zc-btn">
-                            </el-col>
-                        </el-row>
-                    </el-form-item>
-
-                    <el-form-item label="验证码" prop="phoneCode">
-                        <el-row>
-                            <el-col :span="16">
-                                <el-input v-model="ruleForm.phoneCode"></el-input>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-button class="zc-btn">获取用户验证码</el-button>
-                            </el-col>
-                        </el-row>
-                    </el-form-item>
-
-                    <el-form-item>
-                        <div class="zx-flex">
-                            <el-button @click="zckey=false">取消</el-button>
-                            <el-button type="primary" @click="submitForm">确认</el-button>
-                        </div>
-                    </el-form-item>
-                </el-form>
-            </div>
-        </div>
+        <register ref="zc"></register>
     </div>
 </template>
 
 <script>
+	import register from './components/register.vue';
+
 	export default {
 		name: "index",
+		components: {
+			register,
+		},
 		data() {
 			return {
-				zckey: false,
-				imageUrl: '',
+				codeurl: '',
 				form: {
 					phone: '',
 					password: '',
 					code: '',
 					checked: false
-				},
-				ruleForm: {
-					name: '',
-					email: '',
-					phone: '',
-					password: '',
-					code: '',
-					phoneCode: '',
 				},
 				rules: {
 					phone: [
@@ -164,21 +95,6 @@
 					checked: [
 						{pattern: /true/, message: '请同意用户协议和隐私条款', trigger: 'change'}
 					],
-					name: [
-						{required: true, message: '不能为空', trigger: 'blur'},
-						{min: 2, max: 6, message: '用户名长度为2~6', trigger: 'change'}
-					],
-					email: [
-						{required: true, message: '不能为空', trigger: 'blur'},
-						{
-							pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
-							message: '请输入正确的邮箱地址',
-							trigger: 'change'
-						},
-					],
-					phoneCode: [
-						{required: true, message: '不能为空', trigger: 'blur'},
-					]
 				}
 			};
 		},
@@ -190,28 +106,16 @@
 					}
 				})
 			},
-			submitForm() {
-				this.$refs.ruleForm.validate(v => {
-					if (v) {
-						alert(1);
-					}
-				})
+			goreg() {
+				this.$refs.zc.zckey = true;
 			},
-			handleAvatarSuccess(res, file) {
-				this.imageUrl = URL.createObjectURL(file.raw);
-			},
-			beforeAvatarUpload(file) {
-				const isJPG = file.type === 'image/jpeg';
-				const isLt2M = file.size / 1024 / 1024 < 2;
-
-				if (!isJPG) {
-					this.$message.error('上传头像图片只能是 JPG 格式!');
-				}
-				if (!isLt2M) {
-					this.$message.error('上传头像图片大小不能超过 2MB!');
-				}
-				return isJPG && isLt2M;
+			codeinfo() {
+				this.codeurl = 'http://127.0.0.1/heimamm/public/captcha?type=sendsms&t=' + Math.random() * 99;
 			}
+		},
+		created() {
+			this.codeinfo();
+			// window.console.log(process.env.VUE_APP_URL);
 		}
 	}
 </script>
