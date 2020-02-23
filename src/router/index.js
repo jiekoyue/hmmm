@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import vueRouter from 'vue-router';
 import login from '../views/login/index.vue';
+import index from '../views/admin/index.vue';
 
 const routerPush = vueRouter.prototype.push;
 vueRouter.prototype.push = function push(location) {
@@ -14,8 +15,8 @@ const router = new vueRouter({
 			component: login
 		},
 		{
-			path: '',
-			redirect: '/login'
+			path: '/index',
+			component: index
 		}
 	]
 });

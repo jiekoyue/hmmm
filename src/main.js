@@ -6,7 +6,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './style/base.css';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://127.0.0.1/heimamm/public';
+axios.defaults.baseURL = process.env.VUE_APP_URL;
+//配置全局请求头
+axios.defaults.headers.common['token'] = localStorage.getItem('token');
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;

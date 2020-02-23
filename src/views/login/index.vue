@@ -102,7 +102,6 @@
 			login() {
 				this.$refs.form.validate(v => {
 					if (v) {
-						this.form.code
 						this.$axios({
 							url: 'login',
 							method: 'post',
@@ -115,7 +114,8 @@
 									message: '登录成功',
 									type: 'success'
 								});
-								window.localStorage.setItem("token", msg.data.data.token)
+								window.localStorage.setItem("token", msg.data.data.token);
+								this.$router.push('/index');
 							} else {
 								this.$message.error(msg.data.message);
 							}
