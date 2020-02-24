@@ -1,5 +1,5 @@
 <template>
-    <div style="background: #E8E9EC;width: 100%;height: 100%;">
+    <div class="indexbox" style="background: #E8E9EC;width: 100%;height: 100%;">
         <nav>
             <div class="left">
                 <i class="el-icon-s-fold" v-if="!isCollapse" @click="isCollapse=!isCollapse"></i>
@@ -37,7 +37,104 @@
                     </el-menu-item>
                 </el-menu>
             </div>
-            <div class="content_right"></div>
+            <div class="content_right">
+                <div class="header">
+                    <span>学科编号</span>
+                    <el-input class="w100"></el-input>
+                    <span>学科名称</span>
+                    <el-input class="w149"></el-input>
+                    <span>创建者</span>
+                    <el-input class="w100"></el-input>
+                    <span>状态</span>
+                    <el-select v-model="value" placeholder="请选择" class="w149">
+                        <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-button type="primary">搜索</el-button>
+                    <el-button>清除</el-button>
+                    <el-button type="primary">
+                        <i class="el-icon-plus"></i>
+                        新增学科
+                    </el-button>
+                </div>
+                <div class="main">
+                    <el-table
+                            :data="tableData"
+                            style="width: 100%">
+                        <el-table-column
+                                fixed
+                                prop="status"
+                                label="序号"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                fixed
+                                prop="rid"
+                                label="学科编号"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                prop="name"
+                                label="学科名称"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                prop="short_name"
+                                label="简称"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                prop="creater"
+                                label="创建者"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                prop="create_time"
+                                label="创建日期"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                prop="remark"
+                                label="状态"
+                                width="">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作"
+                                width="">
+                            <template slot-scope="scope">
+                                <el-button
+                                        @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                        type="text"
+                                        size="small">
+                                    编辑
+                                </el-button>
+                                <el-button
+                                        @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                        type="text"
+                                        size="small">
+                                    启用
+                                </el-button>
+                                <el-button
+                                        @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                        type="text"
+                                        size="small">
+                                    禁用
+                                </el-button>
+                                <el-button
+                                        @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                        type="text"
+                                        size="small">
+                                    删除
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -49,7 +146,42 @@
 			return {
 				avater: '',
 				username: '',
-				isCollapse: false
+				isCollapse: false,
+				tableData: [
+					{
+						create_time: "2019-11-08 00:53:30",
+						creater: "刘洋洋",
+						id: 11,
+						intro: "简介",
+						is_del: 0,
+						name: "前端与移动开发",
+						remark: "备注",
+						rid: "QD001",
+						short_name: "前端",
+						status: 1,
+						update_time: "2019-11-21 11:52:22",
+					}, {
+						create_time: "2019-11-08 00:53:30",
+						creater: "刘洋洋",
+						id: 11,
+						intro: "简介",
+						is_del: 0,
+						name: "前端与移动开发",
+						remark: "备注",
+						rid: "QD001",
+						short_name: "前端",
+						status: 1,
+						update_time: "2019-11-21 11:52:22",
+					},],
+				options: [
+					{
+					value: '选项1',
+					label: '黄金糕'
+				}, {
+					value: '选项2',
+					label: '双皮奶'
+				}],
+				value: ''
 			};
 		},
 		methods: {
@@ -58,6 +190,9 @@
 			},
 			handleClose(key, keyPath) {
 				console.log(key, keyPath);
+			},
+			deleteRow(index, rows) {
+				rows.splice(index, 1);
 			}
 		},
 		created() {
@@ -75,6 +210,11 @@
 </script>
 
 <style scoped lang="less">
+    .indexbox {
+        display: flex;
+        flex-direction: column;
+    }
+
     nav {
         width: 100%;
         height: 60px;
@@ -135,30 +275,68 @@
     }
 
     .content {
+        flex: 1;
         width: 100%;
-        height: 100%;
         display: flex;
 
         .content_left {
             box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
             /*width: 201px;*/
             overflow: hidden;
-        }
 
-        .el-menu-vertical-demo {
-            height: 100%;
-            transition: all 1s;
-        }
+            .el-menu-vertical-demo {
+                height: 100%;
+                width: 201px;
+                transition: all 1s;
+            }
 
-        .el-menu--collapse {
-            width: 0;
-            display: none;
+            .el-menu--collapse {
+                width: 0;
+                display: none;
+            }
         }
 
         .content_right {
             padding: 20px 19px 0 18px;
-            background: skyblue;
-            width: 100%;
+            flex: 1;
+
+            .header {
+                height: 103px;
+                background: rgba(255, 255, 255, 1);
+                box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+                border-radius: 4px;
+                margin-bottom: 19px;
+                padding: 21px 0 0 23px;
+
+                span {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: rgba(122, 124, 127, 1);
+                    margin-right: 11px;
+                }
+
+                .w149 {
+                    width: 149px !important;
+                    margin-right: 11px;
+                }
+
+                .w100 {
+                    width: 100px !important;
+                    margin-right: 11px;
+                }
+
+                .el-input {
+                    width: auto;
+                }
+            }
+
+            .main {
+                background: rgba(255, 255, 255, 1);
+                box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+                border-radius: 4px;
+                width: 100%;
+                padding: 15px;
+            }
         }
     }
 </style>

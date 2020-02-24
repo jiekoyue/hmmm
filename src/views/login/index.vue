@@ -62,6 +62,7 @@
 
 <script>
 	import register from './components/register.vue';
+	import {settoken} from '@/utilis/token.js';
 
 	export default {
 		name: "index",
@@ -114,7 +115,7 @@
 									message: '登录成功',
 									type: 'success'
 								});
-								window.localStorage.setItem("token", msg.data.data.token);
+								settoken(msg.data.data.token);
 								this.$router.push('/index');
 							} else {
 								this.$message.error(msg.data.message);

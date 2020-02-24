@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import vueRouter from 'vue-router';
 import login from '../views/login/index.vue';
-import index from '../views/admin/index.vue';
+import index from '../views/index/index.vue';
+import subject from '../views/index/components/subjectList.vue';
 
 const routerPush = vueRouter.prototype.push;
 vueRouter.prototype.push = function push(location) {
@@ -16,7 +17,13 @@ const router = new vueRouter({
 		},
 		{
 			path: '/index',
-			component: index
+			component: index,
+			children: [
+				{
+					path: 'subject',
+					component: subject
+				}
+			]
 		}
 	]
 });

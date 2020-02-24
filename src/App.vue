@@ -8,11 +8,11 @@
 	export default {
 		name: "App",
 		created() {
-			if (localStorage.getItem('token')) {
-				this.$router.push('/index');
-			} else {
-				this.$router.push('/login');
-			}
+			// if (localStorage.getItem('token')) {
+			// 	this.$router.push('/index');
+			// } else {
+			// 	this.$router.push('/login');
+			// }
 		}
 	}
 </script>
