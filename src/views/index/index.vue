@@ -17,7 +17,7 @@
                 <el-menu
                         router
                         :collapse="isCollapse"
-                        default-active="/index/subject"
+                        default-active=""
                         class="el-menu-vertical-demo">
                     <el-menu-item index="/index/chart">
                         <i class="el-icon-pie-chart"></i>
@@ -50,6 +50,7 @@
 
 <script>
 	import {info, logout} from '@/api/index.js';
+	import {gettoken} from '@/utilis/token.js';
 
 	export default {
 		name: "index",
@@ -90,7 +91,6 @@
 			},
 		},
 		created() {
-			this.$router.push('/index/subject');
 			info().then(msg => {
 				// window.console.log(msg);
 				if (msg.data.code == 200) {
@@ -99,6 +99,12 @@
 				}
 
 			});
+		},
+		beforeCreate() {
+			if (!gettoken()) {
+				this.$message.error('请先登录');
+				this.$router.push('/login');
+			}
 		}
 	}
 </script>

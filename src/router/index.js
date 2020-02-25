@@ -7,6 +7,9 @@ import business from '../views/index/components/business.vue';
 import chart from '../views/index/components/chart.vue';
 import question from '../views/index/components/question.vue';
 import user from '../views/index/components/user.vue';
+//导入进度条
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 const routerPush = vueRouter.prototype.push;
 vueRouter.prototype.push = function push(location) {
@@ -47,5 +50,14 @@ const router = new vueRouter({
 			]
 		}
 	]
+});
+router.beforeEach((to, from, next) => {
+	// ...
+	NProgress.start();
+	next();
+});
+router.afterEach(() => {
+	// ...
+	NProgress.done();
 });
 export default router;
