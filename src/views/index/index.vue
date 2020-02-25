@@ -50,7 +50,6 @@
 
 <script>
 	import {info, logout} from '@/api/index.js';
-	import {gettoken} from '@/utilis/token.js';
 
 	export default {
 		name: "index",
@@ -97,14 +96,7 @@
 					this.username = msg.data.data.username;
 					this.avater = process.env.VUE_APP_URL + '/' + msg.data.data.avatar;
 				}
-
 			});
-		},
-		beforeCreate() {
-			if (!gettoken()) {
-				this.$message.error('请先登录');
-				this.$router.push('/login');
-			}
 		}
 	}
 </script>

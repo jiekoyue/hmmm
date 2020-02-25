@@ -23,7 +23,7 @@
                 新增学科
             </el-button>
         </div>
-        <div class="main" v-if="tableData&&pagination">
+        <div class="main">
             <el-table
                     :data="tableData"
                     style="width: 100%">
@@ -67,7 +67,6 @@
                         <el-button
                                 v-if="tableData[scope.$index].status"
                                 style="color:rgba(90,93,98,1);font-weight:bold;"
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
                                 type="text"
                                 size="small">
                             启用
@@ -76,7 +75,6 @@
                         <el-button
                                 v-else
                                 style="color: #FF3D3D;font-weight:bold;"
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
                                 type="text"
                                 size="small">
                             禁用
@@ -88,27 +86,27 @@
                         width="">
                     <template slot-scope="scope">
                         <el-button
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                @click.native.prevent="editbtn(scope.$index)"
                                 type="text"
                                 size="small">
                             编辑
                         </el-button>
                         <el-button
                                 v-if="!tableData[scope.$index].status"
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                @click.native.prevent="statusfn(tableData[scope.$index].id)"
                                 type="text"
                                 size="small">
                             启用
                         </el-button>
                         <el-button
                                 v-else
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                @click.native.prevent="statusfn(tableData[scope.$index].id)"
                                 type="text"
                                 size="small">
                             禁用
                         </el-button>
                         <el-button
-                                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                                @click.native.prevent="delfn(tableData[scope.$index].id)"
                                 type="text"
                                 size="small">
                             删除
@@ -124,38 +122,60 @@
                     :current-page="currentPage4"
                     :page-sizes="[10, 20, 30, 40]"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="pagination">
+                    :total="pagination||0">
             </el-pagination>
         </div>
-        <el-dialog title="学科新增" :visible.sync="dialogFormVisible" center width="600px">
-            <el-form :model="form" ref="addform">
-                <el-form-item label="学科编号" :label-width="formLabelWidth">
+        <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center width="600px">
+            <el-form :model="form" ref="addform" :rules="rules">
+                <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
                     <el-input v-model="form.rid" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="学科名称" :label-width="formLabelWidth">
+                <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
                     <el-input v-model="form.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="学科简称" :label-width="formLabelWidth">
+                <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">
                     <el-input v-model="form.short_name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="学科简介" :label-width="formLabelWidth">
+                <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">
                     <el-input v-model="form.intro" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="学科备注" :label-width="formLabelWidth">
+                <el-form-item label="学科备注" :label-width="formLabelWidth" prop="remark">
                     <el-input v-model="form.remark" autocomplete="off"></el-input>
                 </el-form-item>
-
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="offform">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="affirm">确 定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="编辑学科" :visible.sync="editVisible" center width="600px">
+            <el-form :model="editform" ref="addform" :rules="rules">
+                <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
+                    <el-input v-model="editform.rid" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="editform.name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">
+                    <el-input v-model="editform.short_name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">
+                    <el-input v-model="editform.intro" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="学科备注" :label-width="formLabelWidth" prop="remark">
+                    <el-input v-model="editform.remark" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="editVisible=false">取 消</el-button>
+                <el-button type="primary" @click="editfn">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <script>
-	import {infolist} from '@/api/index.js';
+	import {addsubject, amend, delsub, editsub, infolist} from '@/api/index.js';
 
 	export default {
 		name: "subjectList",
@@ -187,7 +207,17 @@
 					intro: '',
 					remark: '',
 				},
+				rules: {
+					rid: [
+						{required: true, message: '请输入学科编号', trigger: 'blur'},
+					],
+					name: [
+						{required: true, message: '请输入学科名称', trigger: 'blur'},
+					],
+				},
 				formLabelWidth: '120px',
+				editVisible: false,
+				editform: {}
 			};
 		},
 		methods: {
@@ -199,6 +229,7 @@
 				console.log(`当前页: ${val}`);
 				this.ifli(val);
 			},
+
 			//获取学科列表
 			ifli(page) {
 				infolist({
@@ -223,10 +254,67 @@
 				};
 			},
 
+			//确认
+			affirm() {
+				this.$refs.addform.validate((valid) => {
+					if (valid) {
+						addsubject(this.form).then(msg => {
+							if (msg.data.code == 200) {
+								this.ifli(1);
+								this.$message.success('添加成功');
+								this.dialogFormVisible = false;
+							} else {
+								this.$message.error(msg.data.message)
+							}
+						});
+					}
+				});
+			},
+
 			//取消
 			offform() {
 				this.dialogFormVisible = false;
+				window.console.log(this.$refs.addform);
 				this.$refs.addform.resetFields();
+			},
+
+			//修改学科状态
+			statusfn(id) {
+				amend(id).then(msg => {
+					this.alt(msg.data.code);
+				})
+			},
+
+			//删除学科
+			delfn(id) {
+				delsub(id).then(msg => {
+					this.alt(msg.data.code);
+				})
+			},
+
+			//编辑学科
+			editbtn(index) {
+				this.editform = {...this.tableData[index]};
+				this.editVisible = true;
+			},
+			editfn() {
+				editsub(this.editform).then(msg => {
+					window.console.log(msg);
+					this.alt(msg.data.code);
+					if (msg.data.code == 200) {
+						this.editVisible = false;
+					}
+
+				});
+			},
+			//全局使用的方法
+			alt(data) {
+				if (data == 200) {
+					this.$message.success('修改成功');
+					this.ifli(1);
+				} else {
+					this.$message.error('修改失败');
+				}
 			}
 		},
 		created() {

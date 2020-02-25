@@ -29,7 +29,8 @@
                         <el-col :span="17">
                             <div class="grid-content bg-purple-dark">
                                 <el-form-item prop="code">
-                                    <el-input placeholder="请输入验证码" v-model="form.code" clearable>
+                                    <el-input placeholder="请输入验证码" v-model="form.code" clearable
+                                              @keyup.enter.native="login">
                                         <i slot="prefix" class="el-input__icon  el-icon-key"></i>
                                     </el-input>
                                 </el-form-item>

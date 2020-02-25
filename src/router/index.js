@@ -10,6 +10,10 @@ import user from '../views/index/components/user.vue';
 //导入进度条
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+//token
+import {gettoken, re} from '@/utilis/token.js';
+import {info} from '@/api/index.js';
+import {Message} from 'element-ui';
 
 const routerPush = vueRouter.prototype.push;
 vueRouter.prototype.push = function push(location) {
@@ -20,44 +24,74 @@ const router = new vueRouter({
 	routes: [
 		{
 			path: '/login',
-			component: login
+			component: login,
+			meta: {title: '登录'}
 		},
 		{
 			path: '/index',
 			component: index,
+			meta: {title: '首页'},
 			children: [
 				{
 					path: 'subject',
-					component: subject
+					component: subject,
+					meta: {title: '学科列表'}
 				},
 				{
 					path: 'business',
-					component: business
+					component: business,
+					meta: {title: '企业列表'}
 				},
 				{
 					path: 'chart',
-					component: chart
+					component: chart,
+					meta: {title: '数据概览'}
 				},
 				{
 					path: 'question',
-					component: question
+					component: question,
+					meta: {title: '题库列表'}
 				},
 				{
 					path: 'user',
-					component: user
+					component: user,
+					meta: {title: '用户列表'}
 				},
 
 			]
+		},
+		{
+			path: '',
+			redirect: '/login'
 		}
 	]
 });
+let whirt = ['/login'];
 router.beforeEach((to, from, next) => {
 	// ...
 	NProgress.start();
-	next();
+	if (whirt.includes(to.path)) {
+		next();
+	} else if (!gettoken()) {
+		Message.error('请先登录');
+		NProgress.done();
+		next('login');
+	} else {
+		info().then(msg => {
+			if (msg.data.code == 206) {
+				re();
+				Message.error('登录异常，请重新登录');
+				NProgress.done();
+				next('login');
+			} else {
+				next();
+			}
+		});
+	}
 });
-router.afterEach(() => {
+router.afterEach((to) => {
 	// ...
 	NProgress.done();
+	document.title = to.meta.title;
 });
 export default router;

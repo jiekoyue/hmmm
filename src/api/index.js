@@ -55,3 +55,34 @@ export function addsubject(data) {
 		data,
 	});
 }
+
+//修改学科状态
+export function amend(id) {
+	return ax({
+		url: '/subject/status',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//学科删除接口
+export function delsub(id) {
+	return ax({
+		url: '/subject/remove',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//学科编辑接口 /subject/edit
+export function editsub(data) {
+	return ax({
+		url: '/subject/edit',
+		method: 'post',
+		data,
+	});
+}
