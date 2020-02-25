@@ -73,10 +73,10 @@
 			return {
 				codeurl: '',
 				form: {
-					phone: '',
-					password: '',
+					phone: '18511111111',
+					password: '12345678',
 					code: '',
-					checked: false
+					checked: true
 				},
 				rules: {
 					phone: [
