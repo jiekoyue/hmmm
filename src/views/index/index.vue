@@ -13,11 +13,11 @@
             </div>
         </el-header>
         <el-container>
-            <el-aside class="myaside" width="auto">
+            <el-aside v-if="pathkey" class="myaside" width="auto">
                 <el-menu
                         router
                         :collapse="isCollapse"
-                        default-active=""
+                        :default-active="mrpath"
                         class="el-menu-vertical-demo">
                     <el-menu-item index="/index/chart">
                         <i class="el-icon-pie-chart"></i>
@@ -58,8 +58,19 @@
 				isCollapse: false,
 				avater: '',
 				username: '',
+				mrpath: '',
+				pathkey: true
 
 			};
+		},
+		watch: {
+			'$route.path': function () {
+				this.pathkey = false;
+				this.mrpath = this.$route.path;
+				this.$nextTick(() => {
+					this.pathkey = true;
+				});
+			}
 		},
 		methods: {
 			handleOpen(key, keyPath) {
@@ -90,6 +101,7 @@
 			},
 		},
 		created() {
+			this.mrpath = this.$route.path;
 			info().then(msg => {
 				// window.console.log(msg);
 				if (msg.data.code == 200) {

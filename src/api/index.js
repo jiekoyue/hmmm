@@ -86,3 +86,90 @@ export function editsub(data) {
 		data,
 	});
 }
+
+//获取企业列表
+export function priselist(params) {
+	return ax({
+		url: '/enterprise/list',
+		params,
+	});
+}
+
+//修改企业状态 /enterprise/status
+export function prisestatus(id) {
+	return ax({
+		url: '/enterprise/status',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//添加企业
+export function addprise(data) {
+	return ax({
+		url: '/enterprise/add',
+		method: 'post',
+		data,
+	});
+}
+
+//企业删除接口
+export function delpri(id) {
+	return ax({
+		url: '/enterprise/remove',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//企业编辑接口
+export function editpri(data) {
+	return ax({
+		url: '/enterprise/edit',
+		method: 'post',
+		data,
+	});
+}
+
+//获取用户列表
+export function userinfo(params) {
+	return ax({
+		url: '/user/list',
+		params,
+	});
+}
+
+//创建用户
+export function adduser(data) {
+	return ax({
+		url: '/user/add',
+		method: 'post',
+		data,
+	});
+}
+
+//修改用户状态 /enterprise/status
+export function userstatus(id) {
+	return ax({
+		url: '/user/status',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//用户删除接口
+export function deluser(id) {
+	return ax({
+		url: '/user/remove',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}

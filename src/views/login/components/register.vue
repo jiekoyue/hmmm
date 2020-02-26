@@ -204,16 +204,6 @@
 					}
 				}, 1000);
 				this.phonecode = true;
-				// this.$axios({
-				// 	url: '/sendsms',
-				// 	method: 'post',
-				// 	data: {
-				// 		code: this.ruleForm.code,
-				// 		phone: this.ruleForm.phone,
-				// 	},
-				// 	withCredentials: true
-				//
-				// })
 				sendsms({
 					code: this.ruleForm.code,
 					phone: this.ruleForm.phone,
