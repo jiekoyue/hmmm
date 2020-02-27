@@ -88,8 +88,8 @@
 						window.console.log(msg);
 					});
 					this.$router.push('/login');
-					this.$store.commit('stname', msg.data.data.username);
-					this.$store.commit('sturl', msg.data.data.avatar);
+					this.$store.commit('stname',);
+					this.$store.commit('sturl',);
 					this.$message({
 						type: 'success',
 						message: '退出成功!'
@@ -189,5 +189,10 @@
     .mymain {
         height: 100%;
         background: #E8E9EC;
+    }
+</style>
+<style>
+    .content_right .header {
+        padding-top: 30px !important;
     }
 </style>

@@ -173,3 +173,12 @@ export function deluser(id) {
 		}
 	});
 }
+
+//用户编辑接口
+export function edituser(data) {
+	return ax({
+		url: '/user/edit',
+		method: 'post',
+		data,
+	});
+}

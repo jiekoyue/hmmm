@@ -51,8 +51,13 @@
                 <el-table-column
                         prop="role_id"
                         label="角色"
-                        :formatter="stateFormat"
                         width="">
+                    <template slot-scope="scope">
+                        <div>{{(scope.row.role_id === 1 && "超级管理员") ||
+                            (scope.row.role_id === 2 && "管理员") ||
+                            (scope.row.role_id === 3 && "老师") || '学生'}}
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="remark"
@@ -159,18 +164,35 @@
                 <el-button type="primary" @click="affirm">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="编辑用户" :visible.sync="editVisible" center width="477px">
+        <el-dialog title="编辑用户" top="0" :visible.sync="editVisible" center width="477px">
             <el-form :model="editform" ref="addform" :rules="rules">
-                <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+                <el-form-item label="头像" :label-width="formLabelWidth">
+                    <el-upload
+                            class="avatar-uploader"
+                            action="http://127.0.0.1/heimamm/public/uploads"
+                            :show-file-list="false"
+                            name="image"
+                            :on-success="handleAvatarSuccess"
+                            :before-upload="beforeAvatarUpload">
+                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="用户名" :label-width="formLabelWidth">
                     <el-input v-model="editform.username" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+                <el-form-item label="邮箱" :label-width="formLabelWidth">
                     <el-input v-model="editform.email" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
+                <el-form-item label="电话" :label-width="formLabelWidth">
                     <el-input v-model="editform.phone" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="角色" :label-width="formLabelWidth" prop="role_id">
+                <el-form-item label="密码" placeholder="不修改密码可不填" :label-width="formLabelWidth" prop="password">
+                    <el-tooltip class="item" content="不修改密码不必填" placement="top">
+                        <el-input v-model="editform.password" autocomplete="off"></el-input>
+                    </el-tooltip>
+                </el-form-item>
+                <el-form-item label="角色" :label-width="formLabelWidth">
                     <el-select v-model="editform.role_id" placeholder="请选择角色">
                         <el-option label="超级管理员" :value="1"></el-option>
                         <el-option label="管理员" :value="2"></el-option>
@@ -178,13 +200,13 @@
                         <el-option label="学生" :value="4"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="状态" :label-width="formLabelWidth" prop="status">
+                <el-form-item label="状态" :label-width="formLabelWidth">
                     <el-select v-model="editform.status" placeholder="请选择状态">
                         <el-option label="禁用" :value="0"></el-option>
                         <el-option label="启用" :value="1"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="用户备注" :label-width="formLabelWidth" prop="remark">
+                <el-form-item label="用户备注" :label-width="formLabelWidth">
                     <el-input v-model="editform.remark" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -197,7 +219,7 @@
 </template>
 
 <script>
-	import {adduser, deluser, userinfo, userstatus,} from '@/api/index.js';
+	import {adduser, deluser, edituser, userinfo, userstatus} from '@/api/index.js';
 
 	export default {
 		name: "user",
@@ -258,18 +280,39 @@
 					role_id: [
 						{required: true, message: '不能为空', trigger: 'blur'},
 					],
+					password: [
+						{min: 6, max: 12, message: '密码长度要为6~12字符', trigger: 'change'}
+					],
 				},
 				formLabelWidth: '101px',
 				editVisible: false,
-				editform: {}
+				editform: {},
+				imageUrl: '',
 			};
 		},
 		methods: {
-			//表格筛选
-			stateFormat(row) {
-				return (row.role_id === 1 && "超级管理员") ||
-					(row.role_id === 2 && "管理员") ||
-					(row.role_id === 3 && "老师") || '学生';
+			//头像上传
+			handleAvatarSuccess(res, file) {
+				this.imageUrl = URL.createObjectURL(file.raw);
+				window.console.log(res);
+				window.console.log(file);
+				this.editform.avatar = res.data.file_path;
+				this.$message({
+					message: '图片上传成功',
+					type: 'success'
+				});
+			},
+			beforeAvatarUpload(file) {
+				const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/gif';
+				const isLt2M = file.size / 1024 / 1024 < 2;
+
+				if (!isJPG) {
+					this.$message.error('上传头像图片只能是 JPG 格式!');
+				}
+				if (!isLt2M) {
+					this.$message.error('上传头像图片大小不能超过 2MB!');
+				}
+				return isJPG && isLt2M;
 			},
 			//页码
 			handleSizeChange(val) {
@@ -345,15 +388,16 @@
 			editbtn(index) {
 				this.editform = {...this.tableData[index]};
 				this.editVisible = true;
+				this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
 			},
 			editfn() {
-				// editsub(this.editform).then(msg => {
-				// 	window.console.log(msg);
-				// 	this.alt(msg.data.code);
-				// 	if (msg.data.code == 200) {
-				// 		this.editVisible = false;
-				// 	}
-				// });
+				edituser(this.editform).then(msg => {
+					window.console.log(msg);
+					this.alt(msg.data.code);
+					if (msg.data.code == 200) {
+						this.editVisible = false;
+					}
+				});
 			},
 			//全局使用的方法
 			alt(data) {
@@ -424,5 +468,37 @@
 <style lang="less">
     .el-dialog__header {
         background: linear-gradient(to right, #11bfee, #2491e9);
+    }
+
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 87px;
+        height: 87px;
+        line-height: 87px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 87px;
+        height: 87px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .el-dialog--center .el-dialog__body {
+        padding-bottom: 0 !important;
     }
 </style>
