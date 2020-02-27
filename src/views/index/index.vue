@@ -7,8 +7,8 @@
                 <p>黑马面面</p>
             </div>
             <div class="right">
-                <img class="useimg" :src="avater" alt="">
-                <p>{{username}},你好</p>
+                <img class="useimg" :src="$store.state.userUrl" alt="">
+                <p>{{$store.state.userName}},你好</p>
                 <el-button type="primary" size="small" class="exit_btn" @click="exit">退出</el-button>
             </div>
         </el-header>
@@ -49,15 +49,13 @@
 </template>
 
 <script>
-	import {info, logout} from '@/api/index.js';
+	import {logout} from '@/api/index.js';
 
 	export default {
 		name: "index",
 		data() {
 			return {
 				isCollapse: false,
-				avater: '',
-				username: '',
 				mrpath: '',
 				pathkey: true
 
@@ -90,6 +88,8 @@
 						window.console.log(msg);
 					});
 					this.$router.push('/login');
+					this.$store.commit('stname', msg.data.data.username);
+					this.$store.commit('sturl', msg.data.data.avatar);
 					this.$message({
 						type: 'success',
 						message: '退出成功!'
@@ -102,13 +102,13 @@
 		},
 		created() {
 			this.mrpath = this.$route.path;
-			info().then(msg => {
-				// window.console.log(msg);
-				if (msg.data.code == 200) {
-					this.username = msg.data.data.username;
-					this.avater = process.env.VUE_APP_URL + '/' + msg.data.data.avatar;
-				}
-			});
+			// info().then(msg => {
+			// 	// window.console.log(msg);
+			// 	if (msg.data.code == 200) {
+			// 		this.username = msg.data.data.username;
+			// 		this.avater = process.env.VUE_APP_URL + '/' + msg.data.data.avatar;
+			// 	}
+			// });
 		}
 	}
 </script>

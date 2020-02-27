@@ -14,6 +14,8 @@ import 'nprogress/nprogress.css';
 import {gettoken, re} from '@/utilis/token.js';
 import {info} from '@/api/index.js';
 import {Message} from 'element-ui';
+//导入vuex
+import store from '@/store/index.js';
 
 const routerPush = vueRouter.prototype.push;
 vueRouter.prototype.push = function push(location) {
@@ -84,6 +86,8 @@ router.beforeEach((to, from, next) => {
 				NProgress.done();
 				next('login');
 			} else {
+				store.commit('stname', msg.data.data.username);
+				store.commit('sturl', msg.data.data.avatar);
 				next();
 			}
 		});

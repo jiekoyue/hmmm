@@ -1,5 +1,6 @@
 <template>
     <div class="box">
+        <!--        <p @click="add">{{$store.state.userName}}</p>-->
         <router-view></router-view>
     </div>
 </template>
@@ -7,13 +8,11 @@
 <script>
 	export default {
 		name: "App",
-		created() {
-			// if (localStorage.getItem('token')) {
-			// 	this.$router.push('/index');
-			// } else {
-			// 	this.$router.push('/login');
-			// }
-		}
+		// methods: {
+		// 	add() {
+		// 		// this.$store.commit('increment')
+		// 	}
+		// }
 	}
 </script>
 
