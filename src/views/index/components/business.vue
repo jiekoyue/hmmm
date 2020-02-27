@@ -44,11 +44,6 @@
                         label="企业名称"
                         width="">
                 </el-table-column>
-                <!--                <el-table-column-->
-                <!--                        prop="short_name"-->
-                <!--                        label="简称"-->
-                <!--                        width="">-->
-                <!--                </el-table-column>-->
                 <el-table-column
                         prop="username"
                         label="创建者"
@@ -92,14 +87,14 @@
                         </el-button>
                         <el-button
                                 v-if="!tableData[scope.$index].status"
-                                @click.native.prevent="statusfn(tableData[scope.$index].id)"
+                                @click.native.prevent="statusfn(scope.$index)"
                                 type="text"
                                 size="small">
                             启用
                         </el-button>
                         <el-button
                                 v-else
-                                @click.native.prevent="statusfn(tableData[scope.$index].id)"
+                                @click.native.prevent="statusfn(scope.$index)"
                                 type="text"
                                 size="small">
                             禁用
@@ -118,7 +113,7 @@
                     background
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                    :current-page="currentPage4"
+                    :current-page="seah.page"
                     :page-sizes="[10, 20, 30, 40]"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pagination||0">
@@ -189,7 +184,6 @@
 						value: 0,
 						label: '禁用'
 					}],
-				currentPage4: 1,
 				value: '',
 				pagination: '',
 				seah: {
@@ -197,6 +191,8 @@
 					name: '',
 					username: '',
 					status: '',
+					page: 1,
+					limit: '',
 				},
 				dialogFormVisible: false,
 				form: {
@@ -229,18 +225,18 @@
 			//页吗
 			handleSizeChange(val) {
 				console.log(`每页 ${val} 条`);
+				this.seah.limit = val;
+				this.ifli();
 			},
 			handleCurrentChange(val) {
 				console.log(`当前页: ${val}`);
-				this.ifli(val);
+				this.seah.page = val;
+				this.ifli();
 			},
 
 			//获取企业列表
-			ifli(page) {
-				priselist({
-					page,
-					...this.seah
-				}).then(msg => {
+			ifli() {
+				priselist(this.seah).then(msg => {
 					window.console.log(msg);
 					if (msg.data.code == 200) {
 						this.tableData = msg.data.data.items;
@@ -265,7 +261,7 @@
 					if (valid) {
 						addprise(this.form).then(msg => {
 							if (msg.data.code == 200) {
-								this.ifli(1);
+								this.ifli();
 								this.$message.success('添加成功');
 								this.dialogFormVisible = false;
 							} else {
@@ -284,9 +280,14 @@
 			},
 
 			//修改企业状态
-			statusfn(id) {
-				prisestatus(id).then(msg => {
-					this.alt(msg.data.code);
+			statusfn(index) {
+				prisestatus(this.tableData[index].id).then(msg => {
+					if (msg.data.code == 200) {
+						this.tableData[index].status = +(!(this.tableData[index].status));
+						this.$message.success('修改成功');
+					} else {
+						this.$message.error('修改失败');
+					}
 				})
 			},
 
@@ -315,14 +316,14 @@
 			alt(data) {
 				if (data == 200) {
 					this.$message.success('修改成功');
-					this.ifli(1);
+					this.ifli();
 				} else {
 					this.$message.error('修改失败');
 				}
 			}
 		},
 		created() {
-			this.ifli(1);
+			this.ifli();
 		}
 	}
 </script>
