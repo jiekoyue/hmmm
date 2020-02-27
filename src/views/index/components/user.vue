@@ -23,6 +23,7 @@
         </div>
         <div class="main">
             <el-table
+                    v-if="tablebol"
                     :data="tableData"
                     border
                     style="width: 100%">
@@ -289,14 +290,14 @@
 				editVisible: false,
 				editform: {},
 				imageUrl: '',
+				editIndex: '',
+				tablebol: true,
 			};
 		},
 		methods: {
 			//头像上传
 			handleAvatarSuccess(res, file) {
 				this.imageUrl = URL.createObjectURL(file.raw);
-				window.console.log(res);
-				window.console.log(file);
 				this.editform.avatar = res.data.file_path;
 				this.$message({
 					message: '图片上传成功',
@@ -393,15 +394,22 @@
 			//编辑用户
 			editbtn(index) {
 				this.editform = {...this.tableData[index]};
+				this.editIndex = index;
 				this.editVisible = true;
 				this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
 			},
 			editfn() {
 				edituser(this.editform).then(msg => {
-					window.console.log(msg);
-					this.alt(msg.data.code);
 					if (msg.data.code == 200) {
+						this.tablebol = false;
+						this.tableData[this.editIndex] = this.editform;
+						this.$nextTick(() => {
+							this.tablebol = true;
+						});
 						this.editVisible = false;
+						this.$message.success('编辑成功');
+					} else {
+						this.$message.error(msg.data.message);
 					}
 				});
 			},

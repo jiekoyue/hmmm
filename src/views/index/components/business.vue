@@ -25,6 +25,7 @@
         </div>
         <div class="main">
             <el-table
+                    v-if="tablebol"
                     :data="tableData"
                     style="width: 100%">
                 <el-table-column
@@ -218,7 +219,9 @@
 				},
 				formLabelWidth: '120px',
 				editVisible: false,
-				editform: {}
+				editform: {},
+				editIndex: '',
+				tablebol: true,
 			};
 		},
 		methods: {
@@ -301,14 +304,21 @@
 			//编辑企业
 			editbtn(index) {
 				this.editform = {...this.tableData[index]};
+				this.editIndex = index;
 				this.editVisible = true;
 			},
 			editfn() {
 				editpri(this.editform).then(msg => {
-					window.console.log(msg);
-					this.alt(msg.data.code);
 					if (msg.data.code == 200) {
+						this.tablebol = false;
+						this.tableData[this.editIndex] = this.editform;
+						this.$nextTick(() => {
+							this.tablebol = true;
+						});
 						this.editVisible = false;
+						this.$message.success('编辑成功');
+					} else {
+						this.$message.error(msg.data.message);
 					}
 				});
 			},
