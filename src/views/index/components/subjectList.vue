@@ -16,7 +16,7 @@
                         :value="item.value">
                 </el-option>
             </el-select>
-            <el-button type="primary" @click="ifli">搜索</el-button>
+            <el-button type="primary" @click="ifli2">搜索</el-button>
             <el-button @click="claer">清除</el-button>
             <el-button type="primary" @click="dialogFormVisible=true">
                 <i class="el-icon-plus"></i>
@@ -29,13 +29,11 @@
                     :data="tableData"
                     style="width: 100%">
                 <el-table-column
-                        fixed
-                        prop="user_id"
+                        type="index"
                         label="序号"
                         width="60">
                 </el-table-column>
                 <el-table-column
-                        fixed
                         prop="rid"
                         label="学科编号"
                         width="">
@@ -123,7 +121,7 @@
                     :current-page="seah.page"
                     :page-sizes="[10, 20, 30, 40]"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="pagination||0">
+                    :total="pagination">
             </el-pagination>
         </div>
         <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center width="600px">
@@ -192,7 +190,7 @@
 						label: '禁用'
 					}],
 				value: '',
-				pagination: '',
+				pagination: 0,
 				seah: {
 					rid: '',
 					name: '',
@@ -229,6 +227,7 @@
 			handleSizeChange(val) {
 				console.log(`每页 ${val} 条`);
 				this.seah.limit = val;
+				this.seah.page = 1;
 				this.ifli();
 			},
 			handleCurrentChange(val) {
@@ -236,7 +235,11 @@
 				this.seah.page = val;
 				this.ifli();
 			},
-
+			//筛选按钮
+			ifli2() {
+				this.seah.page = 1;
+				this.ifli();
+			},
 			//获取学科列表
 			ifli() {
 				infolist(this.seah).then(msg => {
@@ -303,7 +306,9 @@
 
 			//编辑学科
 			editbtn(index) {
-				this.editform = {...this.tableData[index]};
+				if (this.editIndex != index) {
+					this.editform = {...this.tableData[index]};
+				}
 				this.editIndex = index;
 				this.editVisible = true;
 			},
@@ -314,7 +319,7 @@
 					// this.alt(msg.data.code);
 					if (msg.data.code == 200) {
 						this.tablebol = false;
-						this.tableData[this.editIndex] = this.editform;
+						this.tableData[this.editIndex] = {...this.editform};
 						this.$nextTick(() => {
 							this.tablebol = true;
 						});

@@ -3,36 +3,36 @@
         <div class="header">
             <div class="headiv">
                 <span>学科</span>
-                <el-select v-model="seah.role_id" placeholder="请选择学科" class="w150">
+                <el-select v-model="seah.subject" placeholder="请选择学科" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in subjectopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
                 <span>阶段</span>
-                <el-select v-model="seah.role_id" placeholder="请选择阶段" class="w150">
+                <el-select v-model="seah.step" placeholder="请选择阶段" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in stepopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
                 <span>企业</span>
-                <el-select v-model="seah.role_id" placeholder="请选择企业" class="w150">
+                <el-select v-model="seah.enterprise" placeholder="请选择企业" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in enterpriseopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
                 <span>题型</span>
-                <el-select v-model="seah.role_id" placeholder="请选择题型" class="w150">
+                <el-select v-model="seah.type" placeholder="请选择题型" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in typeopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
@@ -41,9 +41,9 @@
             </div>
             <div class="headiv">
                 <span>难度</span>
-                <el-select v-model="seah.role_id" placeholder="请选择难度" class="w150">
+                <el-select v-model="seah.difficulty" placeholder="请选择难度" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in difficultyopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
@@ -52,27 +52,30 @@
                 <span>作者</span>
                 <el-input class="w150" v-model="seah.username"></el-input>
                 <span>状态</span>
-                <el-select v-model="seah.role_id" placeholder="请选择状态" class="w150">
+                <el-select v-model="seah.status" placeholder="请选择状态" class="w150">
                     <el-option
-                            v-for="item in useropt"
+                            v-for="item in statusopt"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
                 <span>日期</span>
-                <el-select v-model="seah.role_id" placeholder="请选择日期" class="w150">
-                    <el-option
-                            v-for="item in useropt"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                    </el-option>
-                </el-select>
+                <el-date-picker
+                        clear-icon=""
+                        class="w150"
+                        change="datefn"
+                        :editable="false"
+                        popper-class="dateclass"
+                        v-model="seah.create_date"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择日期">
+                </el-date-picker>
             </div>
             <span>标题</span>
-            <el-input class="w388" v-model="seah.username"></el-input>
-            <el-button type="primary" @click="ifli">搜索</el-button>
+            <el-input class="w388" v-model="seah.title"></el-input>
+            <el-button type="primary" @click="ifli2">搜索</el-button>
             <el-button @click="claer">清除</el-button>
             <el-button type="primary" @click="dialogFormVisible=true">
                 <i class="el-icon-plus"></i>
@@ -86,30 +89,39 @@
                     border
                     style="width: 100%">
                 <el-table-column
-                        fixed
                         type="index"
                         label="序号"
-                        width="60">
-                </el-table-column>
-                <el-table-column
-                        fixed
-                        prop="username"
-                        label="用户名"
                         width="">
                 </el-table-column>
                 <el-table-column
+                        prop="title"
+                        label="题目"
+                        width="">
+                </el-table-column>
+                <el-table-column
+                        prop="step"
+                        label="学科.阶段"
+                        width="">
+                    <template slot-scope="scope">
+                        前端.{{(scope.row.step==1&&'初级')||(scope.row.step==2&&'中级')||(scope.row.step==3&&'高级')}}
+                    </template>
+                </el-table-column>
+                <el-table-column
                         prop="phone"
-                        label="电话"
-                        width="180">
+                        label="题型"
+                        width="">
+                    <template slot-scope="scope">
+                        {{(scope.row.step==1&&'单选')||(scope.row.step==2&&'多选')||(scope.row.step==3&&'简答')}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="email"
-                        label="邮箱"
-                        width="210">
+                        label="企业"
+                        width="">
                 </el-table-column>
                 <el-table-column
                         prop="role_id"
-                        label="角色"
+                        label="创建者"
                         width="">
                     <template slot-scope="scope">
                         <div>{{(scope.row.role_id === 1 && "超级管理员") ||
@@ -119,17 +131,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="remark"
-                        label="备注"
-                        width="">
-                </el-table-column>
-                <el-table-column
                         prop="status"
                         label="状态"
-                        width="130">
+                        width="">
                     <template slot-scope="scope">
                         <el-button
-                                v-if="tableData[scope.$index].status"
+                                v-if="scope.row.status"
                                 style="color:rgba(90,93,98,1);font-weight:bold;"
                                 type="text"
                                 size="small">
@@ -144,6 +151,11 @@
                             禁用
                         </el-button>
                     </template>
+                </el-table-column>
+                <el-table-column
+                        prop="remark"
+                        label="访问量"
+                        width="">
                 </el-table-column>
                 <el-table-column
                         label="操作"
@@ -186,7 +198,7 @@
                     :current-page="seah.page"
                     :page-sizes="[10, 20, 30, 40]"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="pagination||0">
+                    :total="pagination">
             </el-pagination>
         </div>
         <el-dialog title="新增用户" :visible.sync="dialogFormVisible" center width="477px">
@@ -284,27 +296,75 @@
 		data() {
 			return {
 				tableData: [],
-				useropt: [
+				subjectopt: [
 					{
 						value: 1,
 						label: '超级管理员'
+					},
+				],
+				stepopt: [
+					{
+						value: 1,
+						label: '初级'
 					}, {
 						value: 2,
-						label: '管理员'
+						label: '中级'
 					}, {
 						value: 3,
-						label: '老师'
+						label: '高级'
+					},
+				],
+				enterpriseopt: [
+					{
+						value: 1,
+						label: '超级管理员'
+					},
+				],
+				typeopt: [
+					{
+						value: 1,
+						label: '单选'
 					}, {
-						value: 4,
-						label: '学生'
-					}
+						value: 2,
+						label: '多选'
+					}, {
+						value: 3,
+						label: '简答'
+					},
+				],
+				difficultyopt: [
+					{
+						value: 1,
+						label: '简单'
+					}, {
+						value: 2,
+						label: '一般'
+					}, {
+						value: 3,
+						label: '困难'
+					},
+				],
+				statusopt: [
+					{
+						value: 1,
+						label: '启用'
+					}, {
+						value: 0,
+						label: '禁用'
+					},
 				],
 				value: '',
-				pagination: '',
+				pagination: 0,
 				seah: {
+					title: '',
+					subject: '',
+					enterprise: '',
+					type: '',
+					step: '',
 					username: '',
-					email: '',
-					role_id: '',
+					status: '',
+					difficulty: '',
+					create_date: '',
 					page: 1,
 					limit: '',
 				},
@@ -377,6 +437,7 @@
 			handleSizeChange(val) {
 				console.log(`每页 ${val} 条`);
 				this.seah.limit = val;
+				this.seah.page = 1;
 				this.ifli();
 			},
 			handleCurrentChange(val) {
@@ -384,7 +445,11 @@
 				this.seah.page = val;
 				this.ifli();
 			},
-
+			//筛选按钮
+			ifli2() {
+				this.seah.page = 1;
+				this.ifli();
+			},
 			//获取用户列表
 			ifli() {
 				// userinfo(this.seah).then(msg => {
@@ -450,7 +515,9 @@
 
 			//编辑用户
 			// editbtn(index) {
-			// 	this.editform = {...this.tableData[index]};
+			// 	if (this.editIndex != index) {
+			// this.editform = {...this.tableData[index]};
+			// }
 			// 	this.editIndex = index;
 			// 	this.editVisible = true;
 			// 	this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
@@ -459,7 +526,7 @@
 				// edituser(this.editform).then(msg => {
 				// 	if (msg.data.code == 200) {
 				// 		this.tablebol = false;
-				// 		this.tableData[this.editIndex] = this.editform;
+				// 		this.tableData[this.editIndex] = {...this.editform};
 				// 		this.$nextTick(() => {
 				// 			this.tablebol = true;
 				// 		});
@@ -574,5 +641,9 @@
 
     .el-dialog--center .el-dialog__body {
         padding-bottom: 0 !important;
+    }
+
+    .dateclass {
+        width: 300px;
     }
 </style>
