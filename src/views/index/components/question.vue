@@ -3,7 +3,23 @@
         <div class="header">
             <div class="headiv">
                 <span>学科</span>
-                <el-select v-model="seah.subject" placeholder="请选择学科" class="w150">
+                <!--                <el-select v-model="seah.subject" placeholder="请选择学科" class="w150">-->
+                <!--                    <el-option-->
+                <!--                            v-for="item in subjectopt"-->
+                <!--                            :key="item.value"-->
+                <!--                            :label="item.label"-->
+                <!--                            :value="item.value">-->
+                <!--                    </el-option>-->
+                <!--                </el-select>-->
+                <el-select
+                        class="w150"
+                        v-model="seah.subject"
+                        filterable
+                        remote
+                        reserve-keyword
+                        placeholder="请输入关键词"
+                        :remote-method="remoteMethod"
+                        :loading="loading">
                     <el-option
                             v-for="item in subjectopt"
                             :key="item.value"
@@ -21,7 +37,23 @@
                     </el-option>
                 </el-select>
                 <span>企业</span>
-                <el-select v-model="seah.enterprise" placeholder="请选择企业" class="w150">
+                <!--                <el-select v-model="seah.enterprise" placeholder="请选择企业" class="w150">-->
+                <!--                    <el-option-->
+                <!--                            v-for="item in enterpriseopt"-->
+                <!--                            :key="item.value"-->
+                <!--                            :label="item.label"-->
+                <!--                            :value="item.value">-->
+                <!--                    </el-option>-->
+                <!--                </el-select>-->
+                <el-select
+                        class="w150"
+                        v-model="seah.enterprise"
+                        filterable
+                        remote
+                        reserve-keyword
+                        placeholder="请输入关键词"
+                        :remote-method="entMethod"
+                        :loading="loading">
                     <el-option
                             v-for="item in enterpriseopt"
                             :key="item.value"
@@ -62,7 +94,7 @@
                 </el-select>
                 <span>日期</span>
                 <el-date-picker
-                        clear-icon=""
+                        prefix-icon="el"
                         class="w150"
                         change="datefn"
                         :editable="false"
@@ -91,23 +123,26 @@
                 <el-table-column
                         type="index"
                         label="序号"
-                        width="">
+                        width="50">
                 </el-table-column>
                 <el-table-column
                         prop="title"
                         label="题目"
                         width="">
+                    <template slot-scope="scope">
+                        <div v-html="scope.row.title"></div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="step"
                         label="学科.阶段"
                         width="">
                     <template slot-scope="scope">
-                        前端.{{(scope.row.step==1&&'初级')||(scope.row.step==2&&'中级')||(scope.row.step==3&&'高级')}}
+                        {{scope.row.subject_name}}.{{(scope.row.step==1&&'初级')||(scope.row.step==2&&'中级')||(scope.row.step==3&&'高级')}}
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="phone"
+                        prop="type"
                         label="题型"
                         width="">
                     <template slot-scope="scope">
@@ -115,20 +150,14 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="email"
+                        prop="enterprise_name"
                         label="企业"
                         width="">
                 </el-table-column>
                 <el-table-column
-                        prop="role_id"
+                        prop="username"
                         label="创建者"
                         width="">
-                    <template slot-scope="scope">
-                        <div>{{(scope.row.role_id === 1 && "超级管理员") ||
-                            (scope.row.role_id === 2 && "管理员") ||
-                            (scope.row.role_id === 3 && "老师") || '学生'}}
-                        </div>
-                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="status"
@@ -153,7 +182,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="remark"
+                        prop="reads"
                         label="访问量"
                         width="">
                 </el-table-column>
@@ -162,7 +191,7 @@
                         width="">
                     <template slot-scope="scope">
                         <el-button
-                                @click.native.prevent="editbtn(scope.$index)"
+                                @click.native.prevent="editbtn(scope.row)"
                                 type="text"
                                 size="small">
                             编辑
@@ -196,7 +225,8 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="seah.page"
-                    :page-sizes="[10, 20, 30, 40]"
+                    :page-sizes="[5,10, 20, 30, 40]"
+                    :page-size="seah.limit"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pagination">
             </el-pagination>
@@ -290,18 +320,15 @@
 </template>
 
 <script>
+	import {infolist, priselist, questioninfo} from '@/api/index.js'
 
 	export default {
 		name: "question",
 		data() {
 			return {
 				tableData: [],
-				subjectopt: [
-					{
-						value: 1,
-						label: '超级管理员'
-					},
-				],
+				loading: false,
+				subjectopt: [],
 				stepopt: [
 					{
 						value: 1,
@@ -314,12 +341,7 @@
 						label: '高级'
 					},
 				],
-				enterpriseopt: [
-					{
-						value: 1,
-						label: '超级管理员'
-					},
-				],
+				enterpriseopt: [],
 				typeopt: [
 					{
 						value: 1,
@@ -366,7 +388,7 @@
 					difficulty: '',
 					create_date: '',
 					page: 1,
-					limit: '',
+					limit: 5,
 				},
 				dialogFormVisible: false,
 				form: {
@@ -412,6 +434,34 @@
 			};
 		},
 		methods: {
+			remoteMethod(name) {
+				infolist({
+					name,
+					limit: '',
+				}).then(msg => {
+					if (msg.data.code == 200) {
+						// subjectopt
+						this.subjectopt = msg.data.data.items.map(item => {
+							return {value: item.id, label: item.name}
+						});
+					}
+					window.console.log(msg);
+				});
+			},
+			entMethod(name) {
+				priselist({
+					name,
+					limit: '',
+				}).then(msg => {
+					if (msg.data.code == 200) {
+						// subjectopt
+						this.enterpriseopt = msg.data.data.items.map(item => {
+							return {value: item.id, label: item.name}
+						});
+					}
+					window.console.log(msg);
+				});
+			},
 			//头像上传
 			handleAvatarSuccess(res, file) {
 				this.imageUrl = URL.createObjectURL(file.raw);
@@ -452,13 +502,10 @@
 			},
 			//获取用户列表
 			ifli() {
-				// userinfo(this.seah).then(msg => {
-				// 	window.console.log(msg);
-				// 	if (msg.data.code == 200) {
-				// 		this.tableData = msg.data.data.items;
-				// 		this.pagination = msg.data.data.pagination.total;
-				// 	}
-				// })
+				questioninfo(this.seah).then(data => {
+					window.console.log(data);
+					this.tableData = data.data.data.items;
+				})
 			},
 
 			//清除
@@ -509,32 +556,42 @@
 			//删除用户
 			// delfn(id) {
 			// 	deluser(id).then(msg => {
+			// 	if (msg.data.code == 200) {
+			// 		if (this.tableData.length == 1) {
+			// 			if (this.seah.page != 1) {
+			// 				this.seah.page--;
+			// 			}
+			// 		}
+			// 	}
 			// 		this.alt(msg.data.code);
 			// 	})
 			// },
 
 			//编辑用户
-			// editbtn(index) {
-			// 	if (this.editIndex != index) {
-			// this.editform = {...this.tableData[index]};
-			// }
-			// 	this.editIndex = index;
+			// editbtn(row) {
+			// 	if (this.editIndex != row.id) {
+			// 		this.editform = {...row};
+			// 	}
+			// 	this.editIndex = row.id;
 			// 	this.editVisible = true;
 			// 	this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
 			// },
 			editfn() {
 				// edituser(this.editform).then(msg => {
 				// 	if (msg.data.code == 200) {
-				// 		this.tablebol = false;
-				// 		this.tableData[this.editIndex] = {...this.editform};
-				// 		this.$nextTick(() => {
-				// 			this.tablebol = true;
-				// 		});
+				// 		this.alt(msg.data.code);
 				// 		this.editVisible = false;
-				// 		this.$message.success('编辑成功');
+				// 	// 	this.tablebol = false;
+				// 	// 	this.tableData[this.editIndex] = {...this.editform};
+				// 	// 	this.$nextTick(() => {
+				// 	// 		this.tablebol = true;
+				// 	// 	});
+				// 	// 	this.editVisible = false;
+				// 	// 	this.$message.success('编辑成功');
 				// 	} else {
-				// 		this.$message.error(msg.data.message);
+				// 	this.$message.error(msg.data.message);
 				// 	}
+				//
 				// });
 			},
 			//全局使用的方法
@@ -548,7 +605,12 @@
 			}
 		},
 		created() {
-			// this.ifli();
+			this.ifli();
+			// priselist({
+			// 	limit: ''
+			// }).then(msg => {
+			// 	window.console.log(msg);
+			// })
 		}
 	}
 </script>

@@ -182,3 +182,11 @@ export function edituser(data) {
 		data,
 	});
 }
+
+//获取题目列表
+export function questioninfo(params) {
+	return ax({
+		url: '/question/list',
+		params
+	});
+}

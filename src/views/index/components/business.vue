@@ -29,7 +29,7 @@
                     :data="tableData"
                     style="width: 100%">
                 <el-table-column
-                        prop="user_id"
+                        type="index"
                         label="序号"
                         width="100">
                 </el-table-column>
@@ -52,6 +52,9 @@
                         prop="create_time"
                         label="创建日期"
                         width="210">
+                    <template slot-scope="scope">
+                        {{scope.row.create_time | filtdate}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="status"
@@ -79,7 +82,7 @@
                         width="">
                     <template slot-scope="scope">
                         <el-button
-                                @click.native.prevent="editbtn(scope.$index)"
+                                @click.native.prevent="editbtn(scope.row)"
                                 type="text"
                                 size="small">
                             编辑
@@ -113,7 +116,8 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="seah.page"
-                    :page-sizes="[10, 20, 30, 40]"
+                    :page-sizes="[5,10, 20, 30, 40]"
+                    :page-size="seah.limit"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pagination">
             </el-pagination>
@@ -191,7 +195,7 @@
 					username: '',
 					status: '',
 					page: 1,
-					limit: '',
+					limit: 5,
 				},
 				dialogFormVisible: false,
 				form: {
@@ -300,31 +304,42 @@
 			//删除企业
 			delfn(id) {
 				delpri(id).then(msg => {
+					if (msg.data.code == 200) {
+						if (this.tableData.length == 1) {
+							if (this.seah.page != 1) {
+								this.seah.page--;
+							}
+						}
+					}
 					this.alt(msg.data.code);
 				})
 			},
 
 			//编辑企业
-			editbtn(index) {
-				if (this.editIndex != index) {
-					this.editform = {...this.tableData[index]};
+			editbtn(row) {
+				if (this.editIndex != row.id) {
+					this.editform = {...row};
 				}
-				this.editIndex = index;
+				this.editIndex = row.id;
 				this.editVisible = true;
 			},
 			editfn() {
 				editpri(this.editform).then(msg => {
+					window.console.log(msg);
 					if (msg.data.code == 200) {
-						this.tablebol = false;
-						this.tableData[this.editIndex] = {...this.editform};
-						this.$nextTick(() => {
-							this.tablebol = true;
-						});
+						this.alt(msg.data.code);
 						this.editVisible = false;
-						this.$message.success('编辑成功');
+						// 	this.tablebol = false;
+						// 	this.tableData[this.editIndex] = {...this.editform};
+						// 	this.$nextTick(() => {
+						// 		this.tablebol = true;
+						// 	});
+						// 	this.editVisible = false;
+						// 	this.$message.success('编辑成功');
 					} else {
 						this.$message.error(msg.data.message);
 					}
+
 				});
 			},
 			//全局使用的方法

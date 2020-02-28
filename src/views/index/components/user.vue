@@ -90,7 +90,7 @@
                         width="">
                     <template slot-scope="scope">
                         <el-button
-                                @click.native.prevent="editbtn(scope.$index)"
+                                @click.native.prevent="editbtn(scope.row)"
                                 type="text"
                                 size="small">
                             编辑
@@ -124,7 +124,8 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="seah.page"
-                    :page-sizes="[10, 20, 30, 40]"
+                    :page-size="seah.limit"
+                    :page-sizes="[5,10, 20, 30, 40]"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pagination">
             </el-pagination>
@@ -247,7 +248,7 @@
 					email: '',
 					role_id: '',
 					page: 1,
-					limit: '',
+					limit: 5,
 				},
 				dialogFormVisible: false,
 				form: {
@@ -390,29 +391,38 @@
 			//删除用户
 			delfn(id) {
 				deluser(id).then(msg => {
+					if (msg.data.code == 200) {
+						if (this.tableData.length == 1) {
+							if (this.seah.page != 1) {
+								this.seah.page--;
+							}
+						}
+					}
 					this.alt(msg.data.code);
 				})
 			},
 
 			//编辑用户
-			editbtn(index) {
-				if (this.editIndex != index) {
-					this.editform = {...this.tableData[index]};
+			editbtn(row) {
+				if (this.editIndex != row.id) {
+					this.editform = {...row};
 				}
-				this.editIndex = index;
+				this.editIndex = row.id;
 				this.editVisible = true;
 				this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
 			},
 			editfn() {
 				edituser(this.editform).then(msg => {
 					if (msg.data.code == 200) {
-						this.tablebol = false;
-						this.tableData[this.editIndex] = {...this.editform};
-						this.$nextTick(() => {
-							this.tablebol = true;
-						});
+						this.alt(msg.data.code);
 						this.editVisible = false;
-						this.$message.success('编辑成功');
+						// 	this.tablebol = false;
+						// 	this.tableData[this.editIndex] = {...this.editform};
+						// 	this.$nextTick(() => {
+						// 		this.tablebol = true;
+						// 	});
+						// 	this.editVisible = false;
+						// 	this.$message.success('编辑成功');
 					} else {
 						this.$message.error(msg.data.message);
 					}

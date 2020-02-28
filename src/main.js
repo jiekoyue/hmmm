@@ -6,6 +6,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './style/base.css';
 import axios from 'axios';
 import store from '@/store/index.js';
+import '@/fliters/fliters.js'
 
 axios.defaults.baseURL = process.env.VUE_APP_URL;
 //配置全局请求头
