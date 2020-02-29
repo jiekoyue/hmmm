@@ -2,11 +2,7 @@ import Vue from 'vue';
 import vueRouter from 'vue-router';
 import login from '../views/login/index.vue';
 import index from '../views/index/index.vue';
-import subject from '../views/index/components/subjectList.vue';
-import business from '../views/index/components/business.vue';
-import chart from '../views/index/components/chart.vue';
-import question from '../views/index/components/question.vue';
-import user from '../views/index/components/user.vue';
+import children from './childrens.js';
 //导入进度条
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -32,35 +28,8 @@ const router = new vueRouter({
 		{
 			path: '/index',
 			component: index,
-			meta: {title: '首页'},
-			children: [
-				{
-					path: 'subject',
-					component: subject,
-					meta: {title: '学科列表'}
-				},
-				{
-					path: 'business',
-					component: business,
-					meta: {title: '企业列表'}
-				},
-				{
-					path: 'chart',
-					component: chart,
-					meta: {title: '数据概览'}
-				},
-				{
-					path: 'question',
-					component: question,
-					meta: {title: '题库列表'}
-				},
-				{
-					path: 'user',
-					component: user,
-					meta: {title: '用户列表'}
-				},
-
-			]
+			meta: {title: '首页', roles: ['超级管理员', '管理员', '老师', '学生']},
+			children,
 		},
 		{
 			path: '',
@@ -80,15 +49,33 @@ router.beforeEach((to, from, next) => {
 		next('login');
 	} else {
 		info().then(msg => {
-			if (msg.data.code == 206) {
+			window.console.log(msg);
+			if (msg.data.code == 200) {
+				if (msg.data.data.status) {
+					store.commit('stname', msg.data.data.username);
+					store.commit('sturl', msg.data.data.avatar);
+					store.commit('setrole', msg.data.data.role);
+					if (from.path == '/login') {
+						Message.success('登录成功');
+					}
+					if (to.meta.roles.includes(msg.data.data.role)) {
+						next();
+					} else {
+						Message.error('该账号暂没有权限访问该网站');
+						NProgress.done();
+						next(from.path)
+					}
+				} else {
+					re();
+					Message.error('账号被禁用，请联系管理员');
+					NProgress.done();
+					next('login');
+				}
+			} else {
 				re();
 				Message.error('登录异常，请重新登录');
 				NProgress.done();
 				next('login');
-			} else {
-				store.commit('stname', msg.data.data.username);
-				store.commit('sturl', msg.data.data.avatar);
-				next();
 			}
 		});
 	}

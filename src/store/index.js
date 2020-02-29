@@ -6,6 +6,7 @@ const store = new Vuex.Store({
 	state: {
 		userName: '',
 		userUrl: '',
+		jurisdiction: '',
 	},
 	mutations: {
 		stname(state, name) {
@@ -14,6 +15,9 @@ const store = new Vuex.Store({
 		sturl(state, url) {
 			state.userUrl = url;
 			state.userUrl = process.env.VUE_APP_URL + '/' + url;
+		},
+		setrole(state, url) {
+			state.jurisdiction = url;
 		}
 	}
 });

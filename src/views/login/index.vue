@@ -112,10 +112,6 @@
 						}).then(msg => {
 							window.console.log(msg);
 							if (msg.data.code == 200) {
-								this.$message({
-									message: '登录成功',
-									type: 'success'
-								});
 								settoken(msg.data.data.token);
 								this.$router.push('/index');
 							} else {

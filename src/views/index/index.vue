@@ -19,26 +19,30 @@
                         :collapse="isCollapse"
                         :default-active="mrpath"
                         class="el-menu-vertical-demo">
-                    <el-menu-item index="/index/chart">
-                        <i class="el-icon-pie-chart"></i>
-                        <span slot="title">数据概览</span>
-                    </el-menu-item>
-                    <el-menu-item index="/index/user">
-                        <i class="el-icon-user"></i>
-                        <span slot="title">用户列表</span>
-                    </el-menu-item>
-                    <el-menu-item index="/index/question">
-                        <i class="el-icon-edit-outline"></i>
-                        <span slot="title">题库列表</span>
-                    </el-menu-item>
-                    <el-menu-item index="/index/business">
-                        <i class="el-icon-office-building"></i>
-                        <span slot="title">企业列表</span>
-                    </el-menu-item>
-                    <el-menu-item index="/index/subject">
-                        <i class="el-icon-notebook-2"></i>
-                        <span slot="title">学科列表</span>
-                    </el-menu-item>
+                    <template v-for="(item,index) in childs">
+                        <el-menu-item :key="index" :index="'/index/'+item.path"
+                                      v-if="item.meta.roles.includes($store.state.jurisdiction)">
+                            <i :class="item.meta.icon"></i>
+                            <span slot="title">{{item.meta.title}}</span>
+                        </el-menu-item>
+                    </template>
+
+                    <!--                    <el-menu-item :index="/index/user">-->
+                    <!--                        <i :class="item.meta.icon"></i>-->
+                    <!--                        <span slot="title">用户列表</span>-->
+                    <!--                    </el-menu-item>-->
+                    <!--                    <el-menu-item :index="/index/question">-->
+                    <!--                        <i :class="item.meta.icon"></i>-->
+                    <!--                        <span slot="title">题库列表</span>-->
+                    <!--                    </el-menu-item>-->
+                    <!--                    <el-menu-item :index="/index/business">-->
+                    <!--                        <i :class="item.meta.icon"></i>-->
+                    <!--                        <span slot="title">企业列表</span>-->
+                    <!--                    </el-menu-item>-->
+                    <!--                    <el-menu-item :index="/index/subject">-->
+                    <!--                        <i :class="item.meta.icon"></i>-->
+                    <!--                        <span slot="title">学科列表</span>-->
+                    <!--                    </el-menu-item>-->
                 </el-menu>
             </el-aside>
             <el-main class="mymain">
@@ -50,6 +54,7 @@
 
 <script>
 	import {logout} from '@/api/index.js';
+	import childs from '@/router/childrens.js'
 
 	export default {
 		name: "index",
@@ -57,7 +62,8 @@
 			return {
 				isCollapse: false,
 				mrpath: '',
-				pathkey: true
+				pathkey: true,
+				childs,
 
 			};
 		},

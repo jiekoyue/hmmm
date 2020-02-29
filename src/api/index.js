@@ -190,3 +190,67 @@ export function questioninfo(params) {
 		params
 	});
 }
+
+//题目删除接口
+export function delques(id) {
+	return ax({
+		url: '/question/remove',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//题目编辑接口
+export function editques(data) {
+	return ax({
+		url: '/question/edit',
+		method: 'post',
+		data,
+	});
+}
+
+//题目用户状态 /enterprise/status
+export function quesstatus(id) {
+	return ax({
+		url: '/question/status',
+		method: 'post',
+		data: {
+			id,
+		}
+	});
+}
+
+//发布题目
+export function addques(data) {
+	return ax({
+		url: '/question/add',
+		method: 'post',
+		data,
+	});
+}
+
+//头部数据
+export function dataTitle() {
+	return ax({
+		url: '/data/title',
+		method: 'post'
+	})
+}
+
+//企业题目数据统计数据
+export function dataSta() {
+	return ax({
+		url: '/data/statistics',
+		method: 'post'
+	})
+}
+
+//热门城市题目统计数据
+export function hotCities() {
+	return ax({
+		url: '/data/hot_cities',
+		method: 'post'
+	})
+}

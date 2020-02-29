@@ -18,14 +18,13 @@
             </el-select>
             <el-button type="primary" @click="ifli2">搜索</el-button>
             <el-button @click="claer">清除</el-button>
-            <el-button type="primary" @click="dialogFormVisible=true">
+            <el-button type="primary" @click="addfn">
                 <i class="el-icon-plus"></i>
                 新增学科
             </el-button>
         </div>
         <div class="main">
             <el-table
-                    v-if="tablebol"
                     :data="tableData"
                     style="width: 100%">
                 <el-table-column
@@ -128,30 +127,30 @@
                     :total="pagination">
             </el-pagination>
         </div>
-        <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center width="600px">
-            <el-form :model="form" ref="addform" :rules="rules">
-                <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
-                    <el-input v-model="form.rid" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
-                    <el-input v-model="form.name" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">
-                    <el-input v-model="form.short_name" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">
-                    <el-input v-model="form.intro" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="学科备注" :label-width="formLabelWidth" prop="remark">
-                    <el-input v-model="form.remark" autocomplete="off"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="offform">取 消</el-button>
-                <el-button type="primary" @click="affirm">确 定</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog title="编辑学科" :visible.sync="editVisible" center width="600px">
+        <!--        <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center width="600px">-->
+        <!--            <el-form :model="form" ref="addform" :rules="rules">-->
+        <!--                <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">-->
+        <!--                    <el-input v-model="form.rid" autocomplete="off"></el-input>-->
+        <!--                </el-form-item>-->
+        <!--                <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">-->
+        <!--                    <el-input v-model="form.name" autocomplete="off"></el-input>-->
+        <!--                </el-form-item>-->
+        <!--                <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">-->
+        <!--                    <el-input v-model="form.short_name" autocomplete="off"></el-input>-->
+        <!--                </el-form-item>-->
+        <!--                <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">-->
+        <!--                    <el-input v-model="form.intro" autocomplete="off"></el-input>-->
+        <!--                </el-form-item>-->
+        <!--                <el-form-item label="学科备注" :label-width="formLabelWidth" prop="remark">-->
+        <!--                    <el-input v-model="form.remark" autocomplete="off"></el-input>-->
+        <!--                </el-form-item>-->
+        <!--            </el-form>-->
+        <!--            <div slot="footer" class="dialog-footer">-->
+        <!--                <el-button @click="offform">取 消</el-button>-->
+        <!--                <el-button type="primary" @click="affirm">确 定</el-button>-->
+        <!--            </div>-->
+        <!--        </el-dialog>-->
+        <el-dialog :title="dialogbol?'新增学科':'编辑学科'" :visible.sync="editVisible" center width="600px">
             <el-form :model="editform" ref="addform" :rules="rules">
                 <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
                     <el-input v-model="editform.rid" autocomplete="off"></el-input>
@@ -203,27 +202,19 @@
 					page: 1,
 					limit: 5,
 				},
-				dialogFormVisible: false,
-				form: {
-					name: '',
-					rid: '',
-					short_name: '',
-					intro: '',
-					remark: '',
-				},
 				rules: {
 					rid: [
-						{required: true, message: '请输入学科编号', trigger: 'blur'},
+						{required: true, message: '不能为空', trigger: 'blur'},
 					],
 					name: [
-						{required: true, message: '请输入学科名称', trigger: 'blur'},
+						{required: true, message: '不能为空', trigger: 'blur'},
 					],
 				},
 				formLabelWidth: '120px',
 				editVisible: false,
 				editform: {},
 				editIndex: '',
-				tablebol: true,
+				dialogbol: true,
 			};
 		},
 		methods: {
@@ -266,25 +257,25 @@
 			},
 
 			//确认
-			affirm() {
-				this.$refs.addform.validate((valid) => {
-					if (valid) {
-						addsubject(this.form).then(msg => {
-							if (msg.data.code == 200) {
-								this.ifli();
-								this.$message.success('添加成功');
-								this.dialogFormVisible = false;
-							} else {
-								this.$message.error(msg.data.message)
-							}
-						});
-					}
-				});
-			},
+			// affirm() {
+			// 	this.$refs.addform.validate((valid) => {
+			// 		if (valid) {
+			// 			addsubject(this.form).then(msg => {
+			// 				if (msg.data.code == 200) {
+			// 					this.ifli();
+			// 					this.$message.success('添加成功');
+			// 					this.editVisible = false;
+			// 				} else {
+			// 					this.$message.error(msg.data.message)
+			// 				}
+			// 			});
+			// 		}
+			// 	});
+			// },
 
 			//取消
 			offform() {
-				this.dialogFormVisible = false;
+				this.editVisible = false;
 				window.console.log(this.$refs.addform);
 				this.$refs.addform.resetFields();
 			},
@@ -315,32 +306,48 @@
 				})
 			},
 
+			//新增学科
+			addfn() {
+				this.editVisible = true;
+				this.editform = {};
+				this.dialogbol = true;
+			},
 			//编辑学科
 			editbtn(row) {
 				if (this.editIndex != row.id) {
 					this.editform = {...row};
 				}
 				this.editIndex = row.id;
+				this.dialogbol = false;
 				this.editVisible = true;
 			},
 			editfn() {
-				editsub(this.editform).then(msg => {
-					window.console.log(msg);
-					if (msg.data.code == 200) {
-						this.alt(msg.data.code);
-						this.editVisible = false;
-						// 	this.tablebol = false;
-						// 	this.tableData[this.editIndex] = {...this.editform};
-						// 	this.$nextTick(() => {
-						// 		this.tablebol = true;
-						// 	});
-						// 	this.editVisible = false;
-						// 	this.$message.success('编辑成功');
-					} else {
-						this.$message.error(msg.data.message);
+				this.$refs.addform.validate((valid) => {
+					if (valid) {
+						if (this.dialogbol) {
+							addsubject(this.editform).then(msg => {
+								if (msg.data.code == 200) {
+									this.ifli();
+									this.form = {};
+									this.$message.success('添加成功');
+									this.editVisible = false;
+								} else {
+									this.$message.error(msg.data.message)
+								}
+							});
+						} else {
+							editsub(this.editform).then(msg => {
+								window.console.log(msg);
+								if (msg.data.code == 200) {
+									this.alt(msg.data.code);
+									this.editVisible = false;
+								} else {
+									this.$message.error(msg.data.message);
+								}
+							});
+						}
+
 					}
-
-
 				});
 			},
 			//全局使用的方法

@@ -272,6 +272,7 @@
 						addprise(this.form).then(msg => {
 							if (msg.data.code == 200) {
 								this.ifli();
+								this.form = {};
 								this.$message.success('添加成功');
 								this.dialogFormVisible = false;
 							} else {

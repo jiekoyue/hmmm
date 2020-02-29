@@ -279,7 +279,7 @@
 						}
 					],
 					role_id: [
-						{required: true, message: '不能为空', trigger: 'blur'},
+						{required: true, message: '不能为空', trigger: 'change'},
 					],
 					password: [
 						{min: 6, max: 12, message: '密码长度要为6~12字符', trigger: 'change'}
@@ -359,6 +359,7 @@
 						adduser(this.form).then(msg => {
 							if (msg.data.code == 200) {
 								this.ifli();
+								this.form = {};
 								this.$message.success('添加成功');
 								this.dialogFormVisible = false;
 							} else {
