@@ -33,7 +33,7 @@ const router = new vueRouter({
 		},
 		{
 			path: '',
-			redirect: '/login'
+			redirect: '/index'
 		}
 	]
 });
@@ -61,13 +61,13 @@ router.beforeEach((to, from, next) => {
 					if (to.meta.roles.includes(msg.data.data.role)) {
 						next();
 					} else {
-						Message.error('该账号暂没有权限访问该网站');
+						Message.warning('该账号暂没有权限访问该网站');
 						NProgress.done();
 						next(from.path)
 					}
 				} else {
 					re();
-					Message.error('账号被禁用，请联系管理员');
+					Message.warning('账号被禁用，请联系管理员');
 					NProgress.done();
 					next('login');
 				}

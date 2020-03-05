@@ -78,6 +78,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        v-if="$store.state.jurisdiction!='学生'"
                         label="操作"
                         width="">
                     <template slot-scope="scope">
@@ -104,6 +105,7 @@
                         <el-button
                                 @click.native.prevent="delfn(tableData[scope.$index].id)"
                                 type="text"
+                                v-if="$store.state.jurisdiction!='老师'"
                                 size="small">
                             删除
                         </el-button>

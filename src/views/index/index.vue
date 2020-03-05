@@ -26,23 +26,6 @@
                             <span slot="title">{{item.meta.title}}</span>
                         </el-menu-item>
                     </template>
-
-                    <!--                    <el-menu-item :index="/index/user">-->
-                    <!--                        <i :class="item.meta.icon"></i>-->
-                    <!--                        <span slot="title">用户列表</span>-->
-                    <!--                    </el-menu-item>-->
-                    <!--                    <el-menu-item :index="/index/question">-->
-                    <!--                        <i :class="item.meta.icon"></i>-->
-                    <!--                        <span slot="title">题库列表</span>-->
-                    <!--                    </el-menu-item>-->
-                    <!--                    <el-menu-item :index="/index/business">-->
-                    <!--                        <i :class="item.meta.icon"></i>-->
-                    <!--                        <span slot="title">企业列表</span>-->
-                    <!--                    </el-menu-item>-->
-                    <!--                    <el-menu-item :index="/index/subject">-->
-                    <!--                        <i :class="item.meta.icon"></i>-->
-                    <!--                        <span slot="title">学科列表</span>-->
-                    <!--                    </el-menu-item>-->
                 </el-menu>
             </el-aside>
             <el-main class="mymain">

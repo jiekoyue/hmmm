@@ -84,6 +84,7 @@
                 </el-table-column>
                 <el-table-column
                         label="操作"
+                        v-if="$store.state.jurisdiction!='学生'"
                         width="">
                     <template slot-scope="scope">
                         <el-button
@@ -109,6 +110,7 @@
                         <el-button
                                 @click.native.prevent="delfn(tableData[scope.$index].id)"
                                 type="text"
+                                v-if="$store.state.jurisdiction!='老师'"
                                 size="small">
                             删除
                         </el-button>
@@ -127,29 +129,6 @@
                     :total="pagination">
             </el-pagination>
         </div>
-        <!--        <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center width="600px">-->
-        <!--            <el-form :model="form" ref="addform" :rules="rules">-->
-        <!--                <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">-->
-        <!--                    <el-input v-model="form.rid" autocomplete="off"></el-input>-->
-        <!--                </el-form-item>-->
-        <!--                <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">-->
-        <!--                    <el-input v-model="form.name" autocomplete="off"></el-input>-->
-        <!--                </el-form-item>-->
-        <!--                <el-form-item label="学科简称" :label-width="formLabelWidth" prop="short_name">-->
-        <!--                    <el-input v-model="form.short_name" autocomplete="off"></el-input>-->
-        <!--                </el-form-item>-->
-        <!--                <el-form-item label="学科简介" :label-width="formLabelWidth" prop="intro">-->
-        <!--                    <el-input v-model="form.intro" autocomplete="off"></el-input>-->
-        <!--                </el-form-item>-->
-        <!--                <el-form-item label="学科备注" :label-width="formLabelWidth" prop="remark">-->
-        <!--                    <el-input v-model="form.remark" autocomplete="off"></el-input>-->
-        <!--                </el-form-item>-->
-        <!--            </el-form>-->
-        <!--            <div slot="footer" class="dialog-footer">-->
-        <!--                <el-button @click="offform">取 消</el-button>-->
-        <!--                <el-button type="primary" @click="affirm">确 定</el-button>-->
-        <!--            </div>-->
-        <!--        </el-dialog>-->
         <el-dialog :title="dialogbol?'新增学科':'编辑学科'" :visible.sync="editVisible" center width="600px">
             <el-form :model="editform" ref="addform" :rules="rules">
                 <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">

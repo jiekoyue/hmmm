@@ -3,30 +3,7 @@
         <div class="header">
             <div class="headiv">
                 <span>学科</span>
-                <!--                <el-select v-model="seah.subject" placeholder="请选择学科" class="w150">-->
-                <!--                    <el-option-->
-                <!--                            v-for="item in subjectopt"-->
-                <!--                            :key="item.value"-->
-                <!--                            :label="item.label"-->
-                <!--                            :value="item.value">-->
-                <!--                    </el-option>-->
-                <!--                </el-select>-->
-                <el-select
-                        class="w150"
-                        v-model="seah.subject"
-                        filterable
-                        remote
-                        reserve-keyword
-                        placeholder="请输入关键词"
-                        :remote-method="remoteMethod"
-                        :loading="loading">
-                    <el-option
-                            v-for="item in subjectopt"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                    </el-option>
-                </el-select>
+                <sbjinput v-model="seah.subject"></sbjinput>
                 <span>阶段</span>
                 <el-select v-model="seah.step" placeholder="请选择阶段" class="w150">
                     <el-option
@@ -37,14 +14,6 @@
                     </el-option>
                 </el-select>
                 <span>企业</span>
-                <!--                <el-select v-model="seah.enterprise" placeholder="请选择企业" class="w150">-->
-                <!--                    <el-option-->
-                <!--                            v-for="item in enterpriseopt"-->
-                <!--                            :key="item.value"-->
-                <!--                            :label="item.label"-->
-                <!--                            :value="item.value">-->
-                <!--                    </el-option>-->
-                <!--                </el-select>-->
                 <el-select
                         class="w150"
                         v-model="seah.enterprise"
@@ -109,7 +78,7 @@
             <el-input class="w388" v-model="seah.title"></el-input>
             <el-button type="primary" @click="ifli2">搜索</el-button>
             <el-button @click="claer">清除</el-button>
-            <el-button type="primary" @click="dialogFormVisible=true">
+            <el-button type="primary" @click="addfn">
                 <i class="el-icon-plus"></i>
                 新增试题
             </el-button>
@@ -187,6 +156,7 @@
                 </el-table-column>
                 <el-table-column
                         label="操作"
+                        v-if="$store.state.jurisdiction!='学生'"
                         width="">
                     <template slot-scope="scope">
                         <el-button
@@ -212,6 +182,7 @@
                         <el-button
                                 @click.native.prevent="delfn(tableData[scope.$index].id)"
                                 type="text"
+                                v-if="$store.state.jurisdiction!='老师'"
                                 size="small">
                             删除
                         </el-button>
@@ -230,12 +201,12 @@
                     :total="pagination">
             </el-pagination>
         </div>
-        <quseadd></quseadd>
+        <quseadd ref="qusdhk"></quseadd>
     </div>
 </template>
 
 <script>
-	import {delques, infolist, priselist, quesstatus, questioninfo} from '@/api/index.js'
+	import {delques, priselist, quesstatus, questioninfo} from '@/api/index.js'
 	import quseadd from './quesadd.vue';
 
 	export default {
@@ -247,7 +218,6 @@
 			return {
 				tableData: [],
 				loading: false,
-				subjectopt: [],
 				stepopt: [
 					{
 						value: 1,
@@ -313,20 +283,6 @@
 		},
 		methods: {
 			//搜索获取远程数据
-			remoteMethod(name) {
-				infolist({
-					name,
-					limit: '',
-				}).then(msg => {
-					if (msg.data.code == 200) {
-						// subjectopt
-						this.subjectopt = msg.data.data.items.map(item => {
-							return {value: item.id, label: item.name}
-						});
-					}
-					window.console.log(msg);
-				});
-			},
 			entMethod(name) {
 				priselist({
 					name,
@@ -404,15 +360,23 @@
 				})
 			},
 
+			//新增
+			addfn() {
+				this.$refs.qusdhk.dialogFormVisible = true;
+				this.$refs.qusdhk.editkey = true;
+				this.$refs.qusdhk.form = true;
+			},
+
 			//编辑用户
-			// editbtn(row) {
-			// 	if (this.editIndex != row.id) {
-			// 		this.editform = {...row};
-			// 	}
-			// 	this.editIndex = row.id;
-			// 	this.editVisible = true;
-			// 	this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
-			// },
+			editbtn(row) {
+				if (this.editIndex != row.id) {
+					this.$refs.qusdhk.form = {...row};
+				}
+				this.editIndex = row.id;
+				this.$refs.qusdhk.dialogFormVisible = true;
+				this.$refs.qusdhk.editkey = false;
+				// this.imageUrl = process.env.VUE_APP_URL + '/' + this.editform.avatar;
+			},
 
 			//全局使用的方法
 			alt(data) {
@@ -426,11 +390,6 @@
 		},
 		created() {
 			this.ifli();
-			// priselist({
-			// 	limit: ''
-			// }).then(msg => {
-			// 	window.console.log(msg);
-			// })
 		}
 	}
 </script>
